@@ -1,0 +1,70 @@
+Zajednička distribucija \engl{joint distribution} definirana je jednadžbom:
+
+\begin{equation} \label{eq:joint distribution}
+f(x, y_1, y_2, \dots , y_p).
+\end{equation}
+Potrebno je izračunati svojstva marginalne distribucije \engl{marginal distribution}
+\begin{equation} \label{eq:marginal distribution}
+f(x) = \int \dots \int f(x,y_1, y_2, \dots , y_p) dy_1 dy_2 \dots dy_p
+\end{equation}
+kao što su srednja vrijednost \engl{mean} ili standardna devijacija \engl{standard deviation}. Analitičkim izračunom integrala \ref{eq:marginal distribution} dobije se $f(x)$, nakon čega je moguće izračunati željena svojstva. Analitički (ili numerički) izračun integrala može biti izuzetno složen. Gibbsovo uzorkovanje je alternativan način računjanja marginalne distribucije $f(x)$.
+
+Gibbsovim uzorkovanjem generiraju se uzorci $X_1, ..., X_m ~ f(x)$ bez poznate funkcije $f(x)$. Generiranjem dovoljno velikog uzorka, moguće je izračunati svojstva, kao što su srednja vrijednost ili standardna devijacija, funkcije $f(x)$ s određenom preciznošću. 
+
+\section{Dvodimenzionalni slučaj}
+
+Prvi primjer Gibbsovog uzorkovanja bit će objašnjen za dvodimenzionalni slučaj. Gibbsovim uzorkovanjem se za par slučajnih varijabli $(X,Y)$ želi dobiti $f(x)$. Poznate su uvjetne distribucije $f(x|y)$ i $f(y|x)$. Generira se Gibbsova sekvenca:
+\begin{equation} \label{eq:gibbs sequence}
+Y_{0}^{'}, X_{0}^{'}, Y_{1}^{'}, X_{1}^{'}, \dots , Y_{k}^{'}, X_{k}^{'}. 
+\end{equation}
+Postavlja je inicijalna vrijednost $Y_{0}^{'} = y_{0}^{'}$, dok se sve ostale vrijednosti generiraju prema
+
+\begin{align} \label{eq:gibbs step condition}
+X_{j}^{'} \sim f(x | Y_{j}^{'}=y_{j}^{'}) \nonumber \\
+Y_{j+1}^{'} \sim f(y | X_{j}^{'} = x_{j}^{'}).
+\end{align}
+
+Generiranje niza \eqref{eq:gibbs sequence} prema formuli \eqref{eq:gibbs step condition} naziva se \textbf{Gibbsovo uzorkovanje}. \citep{gelfand1990sampling} su predložili generiranje $m$ nezavisnih Gibbsovih sekvenci duljine $k$. Posljednje vrijednosti $X_{k}^{'}$ svake od $m$ sekvenci se potom koriste za aproksimaciju $f(x)$. Ako je $k$ dovoljno velik, uzorak $X^{'}$ je nezavisna i jednako distribuirana varijabla \engl{independent and identically distributed} kao i inicijalna nasumična varijabla $X$. Primjere dvodimenzionalnog slučaja Gibbsovog uzorkovanja pokazali su \citep{casella1992explaining}.
+
+\subsection{Primjer 1}
+
+Primjer zajedničke distribucije nasumičnih varijabli $X$ i $Y$:
+\begin{align} \label{eq:example1}
+f(x,y) \propto {n \choose x} y^{x + \alpha - 1}(1-y)^{n - x + \beta - 1}, \nonumber \\
+x = 0,1, \dots ,n \nonumber \\
+0 \le y \le 1.
+\end{align}
+
+Potrebno je izračunati svojstva marginalne distribucije $f(x)$ slučajne varijable $X$. Uvjetne distribucije su poznate:
+
+\begin{subequations} 
+\begin{align} 
+f(x|y) = {n \choose k}\, y^k (1-y)^{n-k} \label{eq:example1a} \\
+f(y|x) = \frac{\Gamma(\alpha+n + \beta)}{\Gamma(x + \alpha)\Gamma(n - x + \beta)}\, y^{x + \alpha-1}(1-y)^{n - x + \beta-1} \label{eq:example1b}
+\end{align}
+\end{subequations}
+
+Generiranjem Gibbsove sekvence formulom \eqref{eq:gibbs step condition} pomoću uvjetnih distribucija \eqref{eq:example1a} i \eqref{eq:example1b} dobivaju se $X_1, X_2, \dots ,X_m$ iz $f(x)$. Dobiveni $f(x)$ je aproksimacija pravog $f(x)$ kojeg je moguće analitički ili numerički izračunati iz zajedničke distribucije \eqref{eq:example1}. U ovome primjeru analitičkim izračunom dobiva se da je
+\begin{align}
+f(x) = {n \choose x} \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}\frac{\Gamma(x+\alpha)\Gamma(n-x+\beta)}{\Gamma(\alpha + \beta +n)} \nonumber \\
+x = 0,1, \dots ,n.
+\end{align}
+
+Ovdje je moguće usporediti koliko je precizno Gibbsovo uzorkovanje.
+
+\subsection{Primjer 2}
+
+Uvjetne distribucije slučajnih varijabli $X$ i $Y$ su eksponencijalne distribucije
+\begin{align}
+f(x|y) \propto ye^{-yx}, 0 < x < B < \infty \nonumber \\
+f(y|x) \propto xe^{-xy}, 0 < y < B < \infty,
+\end{align}
+gdje je $B$ poznata konstanta veća od nule. Ograničenje uvjetnih distribucija na interval $(0,B)$ je dovoljan uvjet za postojanje marginalne distribucije $f(x)$. 
+
+Prosjek konačnih vrijednosti $Y_{k}^{'}$ i $X_{k}^{'}$ Gibbsovih sekvenci može poslužiti za izračun prave marginalne distribucije. Ako se generira $m$ sekvenci Gibbsovim uzorkovanjem onda se vrijednost f(x) može aproksimirati 
+\begin{equation} \label{eq:density}
+\hat{f}(x) = \frac{1}{m}	\sum_{i=1}^{m} f(x|y_i).
+\end{equation}
+
+Jednadžba \eqref{eq:density} je procjena gustoće. Prilikom izračuna $f(x)$ koristi se informacija o prethodnom stanju $y_1$, \dots ,$y_m$ iz $m$ Gibbsovih sekvenci. Procjena sadrži više informacija od procjene s vrijednostima $x_1$, \dots $x_m$. Reo-Blackwell teorem sadrži dokaz \citep{casella1996rao}.
+

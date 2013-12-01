@@ -1,0 +1,101 @@
+Potreban je dokaz da Gibbsova sekvenca \eqref{eq:gibbs sequence} proizvodi konvergentne nizove za nasumična varijabla distribucije $f(x)$. 
+
+$X$ i $Y$ su nasumične varijable, sa zajedničkom raspodjelom
+
+\begin{equation}
+\begin{bmatrix}
+f_{x,y}(0,0) & f_{x,y}(1,0) \\
+f_{x,y}(0,1) & f_{x,y}(1,1) 
+\end{bmatrix} 
+= 
+\begin{bmatrix}
+p_1 & p_2 \\
+p_3 & p_4
+\end{bmatrix}
+\end{equation}
+
+Marginalna distribucija $x$ je
+\begin{equation}
+f_x = \begin{bmatrix}
+f_x(0) & f_x(1)
+\end{bmatrix}
+= \begin{bmatrix}
+p_1 + p_3 & p_2 + p_4.
+\end{bmatrix}
+\end{equation}
+
+Prema tome, uvjetne distribucije $X|Y=y$ i $Y|X=x$ iznose:
+\begin{align} \label{eq:matrix conditional distributions}
+A_{y|x} = \begin{bmatrix}
+\frac{p_1}{p_1+p_3} & \frac{p_3}{p_1+p_3} \\
+\frac{p_2}{p_2+p_4} & \frac{p_4}{p_2+p_4}
+\end{bmatrix},
+A_{x|y} = \begin{bmatrix}
+\frac{p_1}{p_1+p_2} & \frac{p_2}{p_1+p_2} \\
+\frac{p_3}{p_3+p_4} & \frac{p_4}{p_3+p_4}
+\end{bmatrix}
+\end{align}
+
+Dobivene matrice sliče matricama prijelaza karakterističnim za Markovljeve lance \citep{gilks1996markov}. Generiranje Gibbsove sekvence \eqref{eq:gibbs sequence} zahtjeva uvjetne distribucije, što je prikazano \eqref{eq:matrix conditional distributions}. U ovom slučaju Gibbsova sekvenca bit će niz nula i jedinica. Prema \eqref{eq:gibbs step condition} potrebno je povezati uvjetne distribucije za dobivanje koraka Gibbsove sekvence, iz čega nastaje
+
+\begin{equation}
+P(X^{'}_{1}=x_1 | X^{'}_{0}=x_0) = \sum_{y} P(X^{'}_{1} | Y^{'}_{1}=y_1) \cdot P(Y^{'}_{1}=y_1|X^{'}_{0}=x_0)
+\end{equation}, 
+u matričnom obliku
+\begin{equation}
+A_{x|x} = A_{y|x}A{x|y}.
+\end{equation}
+
+Vrijedi:
+\begin{equation} \label{eq:induction}
+f_k = f_0 A_{x|x}^{k} = (f_0 A_{x|x}^{k-1})A_{x|x} = f_{k-1} A_{x|x}
+\end{equation}
+
+Korak $k$ Gibbsove sekvence se dobije kao $(A_{x|x}^{k}$. Ako su vrijednosti u $A_{x|x}$ pozitivne, onda \eqref{eq:induction} za bilokoju inicijalnu vjerojatnost $f_0$ i kada $k \to \infty$, $f_k$ konvergiira distribuciji $f$ koja je stacionarna točna niza \eqref{eq:induction} i zadovoljava jednakost
+\begin{equation}
+fA_{x|x}=f.
+\end{equation}
+
+Ako se generiranje Gibbsove sekvence zaustavi kod dovoljno velikog broja koraka $k$, pretpostavlja se kako je distribucija $X^{'}_{k}$ približno $f_x$. 
+
+Sve navedeno ne vrijedi samo u slučaju $2x2$, već i u općem slučaju slučajnih varijabli $X$ i $Y$ s $n$ i $m$ mogućih vrijednosti.
+
+\section{Matematika za slučaj dvije varijable}
+
+Dvije slučajne varijable $X$ i $Y$. Poznate su uvjetne vjerojatnosti $f_{X|Y}(x|y)$ i $f_{Y|X}(y|x)$. Moguće je izračunati marginalnu distribuciju varijable $X$: $f_X(x)$, kao i zajedničku distribuciju $X$ i $Y$ preko:
+\begin{equation}
+f_X(x) = \int f_{XY}(x,y) dy,
+\end{equation}
+gdje je $f_{XY}(x,y)$ zajednička distribucija. 
+\begin{equation}
+f_{XY}(x,y) = f_{X|Y}(x|y) f_Y(y)
+\end{equation}
+
+\begin{align*}
+f_X(x) &= \int f_{X|Y}(x|y)f_Y(y)dy
+\end{align*}
+\begin{align*}
+f_X(x) &= \int f_{X|Y}(x|y) \int f_{Y|X}(y|t)f_X(t)dt dy \\
+&= \int \bigg[ \int f_{X|Y}(x|y)f_{Y|X}(y|t)dy \bigg] f_X(t)dt \\
+&= \int h(x,t) f_X(t) dt,
+\end{align*}
+gdje je 
+\begin{equation}
+h(x,t) = \bigg[\int f_{X|Y}(x|y)f_{Y|X}(y|t)dy\bigg].
+\end{equation}
+
+\section{Slučaj s više od dvije varijable}
+U slučaju više od dvije varijable generiranje Gibbsove sekvence radi se uzorkovanje supstitucijom \engl{substitution sampling}. 
+
+U slučaju dvije varijable uzorkovanje supstitucijom je uvijek isto. 
+
+Za tri slučajne varijable $X$, $Y$ i $Z$ potrebno je izračunati marginalnu distribuciju $f_X(x)$. Ako se $Y$ i $Z$ promatraju kao jedna varijabla moguće je jednadžbom 
+\begin{equation}
+f_X(x) = \int \bigg[ \int \int f_{X|YZ}(x|y,z)f_{YZ|X}(y,z|t)dydz \bigg] f_X(t)dt
+\end{equation}
+izračunati marginalnu distribuciju. Gibbsova sekvenca bi za j-ti korak bila:
+\begin{align*}
+X_{j}^{'} \sim f(x|Y_{j}^{'} &=y_{j}^{'}, Z_{j}^{'}=z_{j}^{'}) \nonumber \\
+Y_{j+1}^{'} \sim f(y|X_{j}^{'} &=x_{j}^{'}, Z_{j}^{'}=z_{j}^{'}) \nonumber \\
+Z_{j+1}^{'} \sim f(z|X_{j}^{'} &=z_{j}^{'}, Y_{j+1}^{'}=y_{j+1}^{'})
+\end{align*}
