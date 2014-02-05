@@ -1,0 +1,23 @@
+Praktični dio napravljen je temeljem rada \citep{resnik2010gibbs}. Resnik i Hardisty objašnjavaju ostvarenje Naivnog Bayesa \engl{Naive Bayes} pomoću Gibbsovog uzorkovanja na primjeru klasifikacije polariteta dokumenata prema riječima u dokumentima. 
+
+U praktičnom dijelu napravit će se sustav koji izvodi algoritam Naivnog Bayesa, a potrebne vjerojatnosti računa Gibbsovim uzorkovanjem. 
+
+\section{Modeliranje generiranje dokumenata}
+
+Dokumenti se definiraju kao skup riječi koje sadrže \engl{bag of words}. Za dokument $W_j$ potrebno je odabrati prikladniji polaritet $L_j = 0$ ili $L_j = 1$. Skup dokumenata $\mathbb{C}_{k}$ pripada skupini $L_j = 0$, a označava se s $\mathbb{C}_{k} = \{W_j | L_j = 0\}$. Potrebno je pronaći polaritet $L_j$ koji za, poznati dokument $W_j$, maksimizira vjerojatnost $P(L_j|W_J)$. Prema Bayesovom pravilu vrijedi:
+\begin{equation}
+L_j = \argmax_L P(L|W_j) = \argmax_L \frac{P(W_j|L)P(L)}{P(W_j)}
+\end{equation}.
+Moguće je izostaviti nazivnik $P(W_j)$ jer nije ovisan o $L_j$. Ovom formulom nastoji se modelirati način na koji su dokumenti nastali.
+
+Odabir polariteta $L_j$ modelira se Bernoulijevom raspodjelom s parametrom $\pi$:
+\begin{equation}
+L_j \sim Bernoulli(\pi)
+\end{equation}, a zatim je potrebno za svaku poziciju riječi u dokumentu $R_i$ odabrati riječ $W_j$ temeljem distribucije vjerojatnosti riječi ovisne o parametru polariteta %TODO
+\begin{equation}
+W_j = Multinomijalna(R_j, \theta_{L_{j}})
+\end{equation}. Prema modelu Naivnog Bayesa dokumenti se generiraju %TODO
+
+\subsection{Apriori parametri}
+%TODO
+Gore spomenute parametre $\pi$ i $\theta$ je nužno dobiti. Kada nisu poznati, ili ih nije moguće procijeniti specifičnom distribucijom, koristi se jednolika raspodjela. $\pi$ se generira iz Beta distribucije hiperpparametrima $\gamma_{\pi 1}$ i $\gamma_{\pi 2}$. 

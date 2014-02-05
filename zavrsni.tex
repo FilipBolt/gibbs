@@ -1,13 +1,11 @@
 \documentclass[times, utf8, seminar]{fer}
 \usepackage{booktabs}
 \usepackage{amsmath}
-\usepackage{algpseudocode}
-\usepackage{algorithm}
 \usepackage{hyperref}
 \usepackage{multirow}
+\usepackage{amssymb}
+\newcommand{\argmax}{\arg\!\max}
 \makeatletter
-\renewcommand{\ALG@name}{Algoritam}
-
 
 \begin{document}
 
@@ -18,12 +16,13 @@
 
 % TODO: Navedite vaše ime i prezime.
 \author{Filip Boltužić}
-\voditelj{Prof. dr. sc. Bojana Dalbelo-Bašić}
+\voditelj{Prof. dr. sc. Bojana Dalbelo Bašić}
 \maketitle
 
 \tableofcontents
 
 \chapter{Uvod}
+\input{000_uvod.tex}
 
 \chapter{Povijest}
 \input{001_povijest.tex}
@@ -33,6 +32,9 @@
 
 \chapter{Dokaz konvergencije}
 \input{003_dokaz.tex}
+
+\chapter{Praktični dio}
+\input{004_prakticni.tex}
 
 \chapter{Zaključak}
 Zaključak.
