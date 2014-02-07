@@ -3,7 +3,7 @@ Praktični dio napravljen je temeljem rada \citep{resnik2010gibbs}. Resnik i Har
 U praktičnom dijelu napravit će se sustav koji izvodi algoritam Naivnog Bayesa, a potrebne vjerojatnosti računa Gibbsovim uzorkovanjem. 
 
 \section{Skup podataka}
-
+\label{sec:skup}
 Besplatno dostupna biblioteka \textit{Natural Language Toolkit, NLTK} \footnote{Dostupno na \url{http://www.nltk.org/} .} za programski jezik \textit{Python} sadrži pripremljene korpuse teksta. 
 Za potrebe Gibbsovog uzorkovanja korišten je skup podataka \textit{movie\_reviews} koji sadrži osvrte na filmove. Format zapisa u korpusu je $<T, S>$, gdje je $T$ tekst osvrta, a $S \in \{'pos', 'neg'\}$ označeni polaritet osvrta. U nastavku će se za \textit{'pos'} kritike koristiti broj $1$, a za \textit{'neg'} kritike broj $0$. Pozitivne kritike označene su oznakom \textit{'pos'}, a negative \textit{'neg'}. Primjer negativne kritike prikazan je unutar slike \ref{fig:critic_example}.
 
@@ -43,4 +43,85 @@ Parametri apriori vrijednosti nazivaju se hiperparametrima. Kako oba parametra B
 \begin{equation}
 \theta \sim Dirichlet(\gamma_{\theta})
 \end{equation}
+
+\subsection{Zajednička distribucija}
+
+Prostor stanja u ovom problemu sastoji se skalarne varijable parametra $\pi$, dva parametarska vektora $\theta_1$ i $\theta_2$, oznaka klase $L_N$ (za svaki od $N$ dokumenata) i vektora $W_J$ ($J$ je broj riječi). Gibbsovo uzorkovanje kreće se kroz $k$-dimenzionalni prostor definiran ovim varijablama. Uvjetne distribucije definiraju matricu prijelaza između stanja, a zajednička distribucija je ciljna distribucija koju želimo aproksimirati. U našem slučaju zajednička distribucija iznosi:
+\begin{equation}
+P(\pi|\gamma_{\pi 1}\gamma_{\pi 2})P(L|\pi)P(\theta_0 | \gamma_0)P(\theta_1 | \gamma_1)P(\mathbb{C}_0|\theta_0 ,L)P(\mathbb{C}_1 | \theta_1 , L).
+\end{equation}
+Postupak matematičke preobrazbe dobivene jednadžbe opisan je u \citep{resnik2010gibbs}. Konačan rezultat je:
+\begin{equation}
+P(\mathbb{C}, L, \pi , \theta_0 , \theta_1 ; \mu) \propto \pi^{C_1+\gamma_{\pi 1}-1}(1-\pi)^{C_0 + \gamma_{\pi 0} - 1} \prod_{i=1}^{V} \theta_{0,i}^{N_{\mathbb{C_0}}(i)+\gamma_{\theta i} - 1}\theta_{1,i}^{\mathbb{C_1}}(i)+\gamma_{\theta i} - 1.
+\end{equation}
+Dodatno, moguće je integrirati po varijabli $\pi$ i tako reducirati zajedničku distribuciju čime se dobije konačno rješenje:
+\begin{equation}
+P(L, \mathbb{C}, \theta_0 , \theta_1 ; \mu) \propto \frac{\Gamma(\gamma_{\pi 1}+\gamma_{\pi 0}}{\Gamma(\gamma_{\pi 1})\Gamma(\gamma_{\pi 0})} \frac{\Gamma(C_1+\gamma_{\pi 1}\Gamma(\mathbb{C_0}+\gamma_{\pi 0})}{\Gamma(N+\gamma_{\pi 1} + \gamma_{\pi 0})} \prod_{i=1}^{V} \theta_{0,i}^{N_{\mathbb{C_0}}(i)+\gamma_{\theta i} - 1}\theta_{1,i}^{\mathbb{C_1}}(i)+\gamma_{\theta i} - 1.
+\end{equation}
+
+\subsection{Gibbsovo uzrokovanje}
+
+Gibbsovim uzorkovanjem se u općem slučaju dodjeljuje vrijednost varijabli $Z_i$ uzorkovanjem iz uvjetne distribucije:
+\begin{equation}
+P(Z_i | z_i^{(t+1)}, \dots, z_{i-1}^{t+1}, \dots , z_r^{t}).
+\end{equation}
+Uzorkovanje vrijednosti u trenutku $(t+1)$ moguć je nakon dobivanja uzorka svih varijabli u trenutku $t$. U našem slučaju, u trenutku $t$ poznat je broj riječi u svakom dokumentu, broj dokumenata označen s negativnim odnosno pozitivnim sentimentom, broj riječi po dokumentima označenim negativnim odnosno pozitivnim sentimentom, oznake sentimenta po dokumentu i trenutne vrijednosti hiperparametara $\theta_1$ i $\theta_2$. Izračun sentimenta $L$ se dobije uzorkovanjem prema vjerojatnostima dobivenih fiksiranjem uvjetnih vjerojatnosti za $L=0$ (negativni sentiment) i $L=1$ (pozitivni sentiment). Prema tome, $L_{i}^{(t+1)}$ se računa iz uvjetne distribucije:
+\begin{equation}
+P(L_i|L_{1}^{t+1}, \dots , L_{i-1}^{t+1}, \dots , L_{i+1}^t{t}, L_{N}^{t},\mathbb{C}, \theta_{0}^{t}, \theta_{1}^{t}; \mu).
+\end{equation}
+Na sukladan način se dobiju i vrijednosti $\theta_0$ i $\theta_1$:
+\begin{equation}
+P(\theta_{0}^{(t+1)}|L_{1}^{(t+1)},\dots , L_{N}^{(t+1)}, \mathbb{C}, \theta_{1}^{(t)};\mu)
+\end{equation} 
+
+\begin{equation}
+P(\theta_{1}^{(t+1)}|L_{1}^{(t+1)},\dots , L_{N}^{(t+1)}, \mathbb{C}, \theta_{0}^{(t+1)};\mu)
+\end{equation}
+
+\section{Programska implementacija}
+
+\subsection{Priprema podataka}
+
+Prilikom programske implementacije korištene su brojne biblioteke spomenute u \ref{sec:skup}. Uvoz biblioteka napravljen je kao na slici \ref{alg:import}. U skupu podataka \textit{movie\_reviews} ima 2000 osvrta i približno 32000 različitih riječi. Zbog pojednostavljena uzorkovanja i smanjivanja prostora stanja napravljen je Naivni Bayesov klasifikator te su njime izvučene najveće vjerojatnosti određene oznake za $P(L|w)$, gdje je $L$ oznaka sentimenta, a $w$ riječ. Korišteno je 500 od 32000 mogućih riječi. Deset riječi s tog popisa prikazano je slikom \ref{alg:most_info}. Primjerice, korištenje riječi seagal (glumac) u kritici znači da će vjerojatnost da je kritika biti negativna je 13.2 veća od vjerojatnosti pozitivne vjerojatnosti. Izračun tih riječi prikazan je programskim kodom na slici \ref{alg:naive_bayes}. U konačnici gradi se matrica frekvencije riječi i dokumenata (kod na slici \ref{alg:word_doc_freq}). Element $x$ na indeksu $i,j$ govori da se riječ $j$ pojavljuje u dokumentu $i$ $x$ puta. Matrica je prikazana primjerom \ref{alg:mat_word_freq}.
+
+\begin{figure}
+\lstinputlisting[language=Python, firstline=1, lastline=5]{classifier_naive_bayes.py}
+\caption{Uvoz bibilioteka}
+\label{alg:import}
+\end{figure}
+
+\begin{figure}
+\lstinputlisting[language=Python]{most_informative.py}
+\caption{Riječi s najvišim $P(L|w)$}
+\label{alg:most_info}
+\end{figure}
+
+\begin{figure}
+\lstinputlisting[language=Python, firstline=7, lastline=29]{classifier_naive_bayes.py}
+\caption{Algoritam naivnog Bayesa koji računa $P(L|w)$}
+\label{alg:naive_bayes}
+\end{figure}
+
+\begin{figure}
+\lstinputlisting[language=Python, firstline=40, lastline=64]{classifier_naive_bayes.py}
+\caption{Izračun matrice frekvencija riječi i dokumenata}
+\label{alg:word_doc_freq}
+\end{figure}
+
+\begin{figure}
+\centering
+\lstinputlisting{corpus.txt}
+\caption{Primjer matrice frekvencije riječi i dokumenata}
+\label{alg:mat_word_freq}
+\end{figure}
+
+\subsection{Inicijalizacija}
+
+Matrica frekvencija riječi po dokumentima i pripadajuće oznake sentimenta predstavljaju ulazni skup podataka programu Gibbsovog uzorkovanja. Idući nužni korak je dobivanje inicijalnih vrijednosti hiperparametara $\pi$ i vektora $\theta$. Zahvaljujući \textit{Pythonovim} paketima uzorkovanje iz Dirichletove distribucije moguće je provesti iznimno jednostavno. Temeljem hiperparametara uzorkuju se parametri nužni za Gibbsovo uzorkovanje. Inicijalizacija je prikazana slikom \ref{alg:hyp_params}. Gibbsovo uzorkovanje dodatno je parametrizirano ukupnim brojem iteracija, brojem iteracija odbacivanja, udaljenosti između uzoraka, objašnjenih u poglavlju \ref{cha:gibbs_dsc}.
+
+\begin{figure}
+\lstinputlisting[language=Python, firstline=215, lastline=221]{gibbs_sampler.py}
+\caption{Inicijalizacija hiperparametara}
+\label{alg:hyp_params}
+\end{figure}
 

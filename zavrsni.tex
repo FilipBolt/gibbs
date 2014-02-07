@@ -6,9 +6,15 @@
 \usepackage{hyperref}
 \usepackage{multirow}
 \usepackage{amssymb}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\usepackage{algorithmicx}
 \newcommand{\argmax}{\arg\!\max}
 \makeatletter
-
+\lstset{
+  language={Python},
+  basicstyle=\footnotesize
+}
 \begin{document}
 
 % TODO: Navedite broj rada.
@@ -25,9 +31,6 @@
 
 \chapter{Uvod}
 \input{000_uvod.tex}
-
-\chapter{Povijest}
-\input{001_povijest.tex}
 
 \chapter{Metoda Gibbsovog uzorkovanja}
 \input{002_glavno.tex}
